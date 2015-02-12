@@ -48,26 +48,33 @@ def recoverSecret(triplets):
 	endletter=''
 	gotit=''
 
-	# create table of state changes, 
-	# format: tuples (start, end)
-	transtbl=map(lambda i: (i[0],i[1]), triplets)+map(lambda i: (i[1],i[2]), triplets)
 	# get alphabet
 	for i in triplets:
 		for j in i:
 			alphabet.add(j)
-	print "table: ", transtbl
-	print "alphabet: ",alphabet
-	# find starting letter, one that is never in 2nd pos of transtbl tuple
-	for i in alphabet:
-		if not filter(lambda j: j[1]==i, transtbl): startletter=i 
-	print "startletter: ",startletter
-	# find ending letter, one that is never in 1nd pos of transtbl tuple
-	for i in alphabet:
-		if not filter(lambda j: j[0]==i, transtbl): endletter=i 
-	print "endletter: ",endletter
-	# we have starting letter, we have the table of state-changes
-	# now find the path that covers ALL the letters from the alphabet
-	gotit=get_word(startletter, startletter, alphabet-set(startletter), transtbl)
+
+	# format: tuples (start, end)
+	transtbl=map(lambda i: (i[0],i[1]), triplets)+map(lambda i: (i[1],i[2]), triplets)
+
+	while alphabet:
+		# find start letter (nothing points to it)
+		print alphabet
+		print transtbl
+		for i in alphabet:
+			# find if letter is NOT a target
+			if not filter(lambda j: i==j[1], transtbl): 
+				startletter=i
+				break
+		print "STARTLETTER ", startletter
+
+		# and remove those to who it points to so they can become new 1st (or leave those to who he doesn't point to) :)
+		transtbl=filter(lambda j: i!=j[0], transtbl)
+		print "REMOVED ",transtbl
+
+		# it's 1st, remove from alphabet, push to word and repeat :D
+		print startletter
+		gotit+=startletter
+		alphabet-=set(startletter)
 
 	return gotit
 

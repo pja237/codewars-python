@@ -44,17 +44,17 @@ def count_change(n, d):
     i=0
     d=sorted(d)
     while i<len(d):
-        #recurse_change(d[i],[d[i]],n,d[i:])
-        iterative_change(d[i],n,d[i:])
+        recurse_change(d[i],[d[i]],n,d[i:])
+        #iterative_change(d[i],n,d[i:])
         i+=1
     print " FINAL change_combs ", change_combs
     return len(change_combs)
     
 
-#print count_change(4, [1,2]) # => 3
-#print " Expected: 3"
+print count_change(4, [1,2]) # => 3
+print " Expected: 3"
 print count_change(10, [5,2,3]) # => 4
 print " Expected: 4"
-#print count_change(11, [5,7]) # => 0
-#print " Expected: 0"
-#print count_change(20, [1,2,3]) # => 0
+print count_change(11, [5,7]) # => 0
+print " Expected: 0"
+print count_change(20, [1,2,3]) # => 0

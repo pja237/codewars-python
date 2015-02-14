@@ -41,8 +41,7 @@ def snailpath(arr, x, y, n,path):
     # GO LEFT
     if y-1>=0 and arr[x][y-1]: snailpath(arr,x,y-1,n,path)
     # GO UP
-    #if x-1>=0 and arr[x-1][y]: snailpath(arr,x-1,y,n,path)
-    snailpath(arr,x-1,y,n,path)
+    if x-1>=0 and arr[x-1][y]: snailpath(arr,x-1,y,n,path)
 
     print "PATH: ",path
     return path

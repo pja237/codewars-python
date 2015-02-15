@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
-change_combs=list()
+#change_combs=list()
+#change_combs=0
 
 def recurse_change(count, way, total, denoms):
     #print " count, way, total, denoms ",count, way, total, denoms 
@@ -12,49 +13,71 @@ def recurse_change(count, way, total, denoms):
         for i in denoms:
             recurse_change(count+i, way+[i], total, denoms)
 
-def iterative_change(node, total, denoms):
+l_counter=0
+
+def iter_change(node, way, total, denoms):
+    global l_counter
+    change_combs=0
     stack=list()
-    way=list()
-    while not stack or node!=0:
-        print "IN  N",node,"T",total,"S",stack,"W",way,"C",change_combs
-        if sum(way)>=total: node=0
-        if node!=0:
+    sumway=[sum(way)]
+    stack.append(filter(lambda i: (sum(way)+i)<=total and i>node, denoms))
+    #stack=[['x']]
+    #print node, way, total, denoms, stack
+    #while stack[0]:
+    while True:
+        s=sumway[-1]
+        #print "IN  N",node,"T",total,"S",stack,"W",way,"C",change_combs,"SUM",s,"SUMWAY",sumway
+        if s<total:
             way+=[node]
-            tmp=filter(lambda i: (sum(way)+i)<=total, denoms)
-            print tmp
-            stack+=tmp[1:]
-            node=tmp[0] if tmp else denoms[0]
-            #stack+=denoms[1:] if node==denoms[0] else ''
-            #node=denoms[0]
+            sumway+=[sum(way)]
+            #stack.append(filter(lambda i: (sum(way)+i)<=total and i!=node, denoms)[::-1])
+            stack.append(filter(lambda i: (sum(way)+i)<=total and i>node, denoms))
         else:
-            if sum(way)==total: change_combs.append(way)
-            node=stack[-1]
-            stack=stack[:-1]
-            way=way[:-1]
+            #if s==total: change_combs.append(way)
+            if s==total: change_combs+=1
+            while stack and not stack[-1]:
+                sumway=sumway[:-1]
+                way=way[:-1]
+                stack=stack[:-1]
+            if not stack: break
+            node=stack[-1][0]
+            stack[-1].remove(node)
+            #print "STACK CLEANUP  N",node,"T",total,"S",stack,"W",way,"C",change_combs,"SUM",s,"SUMWAY",sumway
 
-        print "OUT N",node,"T",total,"S",stack,"W",way,"C",change_combs
-        raw_input()
-		
-
-
+        #print "OUT  N",node,"T",total,"S",stack,"W",way,"C",change_combs,"SUM",s,"SUMWAY",sumway
+        #raw_input()
+        l_counter+=1
+        if node=='x': break
+    return change_combs
 
 def count_change(n, d):
-    global change_combs
-    change_combs=[]
+    global l_counter
+    l_counter=0
+    #global change_combs
+    #change_combs=[]
+    c=0
     i=0
     d=sorted(d)
     while i<len(d):
-        recurse_change(d[i],[d[i]],n,d[i:])
-        #iterative_change(d[i],n,d[i:])
+        #recurse_change(d[i],[d[i]],n,d[i:])
+        c+=iter_change(d[i], [d[i]], n, d[i:])
         i+=1
-    print " FINAL change_combs ", change_combs
-    return len(change_combs)
+    print " LOOPS TO CALCULATE:", l_counter
+    #print " FINAL change_combs ", change_combs
+    #return len(change_combs)
+    return c
     
 
-print count_change(4, [1,2]) # => 3
-print " Expected: 3"
 print count_change(10, [5,2,3]) # => 4
 print " Expected: 4"
+print count_change(4, [1,2]) # => 3
+print " Expected: 3"
 print count_change(11, [5,7]) # => 0
 print " Expected: 0"
 print count_change(20, [1,2,3]) # => 0
+print count_change(50, [1,2,3]) # => 0
+print " -- "
+print " 50 / 10",count_change(50, [1,2,3,4,5,6,7,8,9,10]) # => 0
+print " 100 / 2",count_change(100, [1,2]) # => 0
+print " 100 / 4",count_change(100, [1,2,3,4]) # => 0
+print " 100 / 6",count_change(100, [1,2,3,4,5,6]) # => 0

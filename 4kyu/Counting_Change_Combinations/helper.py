@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+import time
+
 c=0
 
 memo=dict()
@@ -49,13 +51,21 @@ def count_nomemo( n, m ):
 
 
 N=100
-S=[1,2,3,4,5]
+S=[1,2,3,4,5,6,7,8,9,10]
 
 c=0
+start=time.time()
 print "NOMEMO"
-print count_nomemo (N,len(S)-1)
+print "N=",N,"DENOMS=",S
+print "RESULT=",count_nomemo (N,len(S)-1)
 print "Function calls:",c
+print "TIME: ",time.time()-start
+print
 c=0
+start=time.time()
 print "MEMO"
-print count_memo(N ,len(S)-1)
+print "N=",N,"DENOMS=",S
+print "RESULT=",count_memo(N ,len(S)-1)
 print "Function calls:",c
+print "TIME: ",time.time()-start
+print

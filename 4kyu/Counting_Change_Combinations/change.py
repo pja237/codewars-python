@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-#change_combs=list()
+change_combs=list()
 #change_combs=0
 
 def recurse_change(count, way, total, denoms):
@@ -12,6 +12,7 @@ def recurse_change(count, way, total, denoms):
     elif count<total:
         for i in denoms:
             recurse_change(count+i, way+[i], total, denoms)
+    return 0
 
 l_counter=0
 
@@ -34,7 +35,9 @@ def iter_change(node, way, total, denoms):
             stack.append(filter(lambda i: (sum(way)+i)<=total and i>node, denoms))
         else:
             #if s==total: change_combs.append(way)
-            if s==total: change_combs+=1
+            if s==total: 
+                print way
+                change_combs+=1
             while stack and not stack[-1]:
                 sumway=sumway[:-1]
                 way=way[:-1]
@@ -59,7 +62,7 @@ def count_change(n, d):
     i=0
     d=sorted(d)
     while i<len(d):
-        #recurse_change(d[i],[d[i]],n,d[i:])
+        #c+=recurse_change(d[i],[d[i]],n,d[i:])
         c+=iter_change(d[i], [d[i]], n, d[i:])
         i+=1
     print " LOOPS TO CALCULATE:", l_counter
@@ -68,14 +71,13 @@ def count_change(n, d):
     return c
     
 
-print count_change(10, [5,2,3]) # => 4
-print " Expected: 4"
-print count_change(4, [1,2]) # => 3
-print " Expected: 3"
-print count_change(11, [5,7]) # => 0
-print " Expected: 0"
-print count_change(20, [1,2,3]) # => 0
-print count_change(50, [1,2,3]) # => 0
+print "10 [1,2,5] ",count_change(10, [1,2,5]) # => 3
+print "4 /2 ",count_change(4, [1,2]) # => 3
+print "10/3",count_change(10, [5,2,3]) # => 4
+exit()
+#print count_change(11, [5,7]) # => 0
+print "20 / 3",count_change(20, [1,2,3]) # => 0
+print " 50/3 ",count_change(50, [1,2,3]) # => 0
 print " -- "
 print " 50 / 10",count_change(50, [1,2,3,4,5,6,7,8,9,10]) # => 0
 print " 100 / 2",count_change(100, [1,2]) # => 0

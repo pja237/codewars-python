@@ -25,9 +25,46 @@
 # The output of the interpreted code (always as a string), produced by the . instruction.
 #
 
+class Machine:
+    def __init__(self,code='',input=''):
+        self.mem=list(input)
+        self.dp=0
+        self.ip=0
+        self.code=code
+
+    def decode(self,ip):
+        if self.code[ip] == '>':
+            self.dp+=1
+            if self.dp>=len(self.input):
+                self.input+='0'
+        elif self.code[ip] == '<':
+            self.dp-=1
+            if self.dp<0
+                self.input='0'+self.input
+        elif self.code[ip] == '+':
+            self.input[dp]=chr(ord(self.input[dp])+1) if ord(self.input[dp])<255 else chr(0)
+        elif self.code[ip] == '-':
+            self.input[dp]=chr(ord(self.input[dp])-1) if ord(self.input[dp])>0 else chr(255)
+        elif self.code[ip] == '.':
+            print self.input[dp]
+        elif self.code[ip] == ',':
+            pass
+        elif self.code[ip] == '[':
+        elif self.code[ip] == ']':
+
+    def dump(self):
+        print " --- MACHINE ---"
+        print "Memory:",self.mem
+        print "Code:",self.code
+        print "DP:",self.dp
+        print "IP:",self.ip
+        print "@instruction:",self.code[self.ip]
+        print " ---------------"
+
 def brain_luck(code, input):
     output=None
-
+    comp=Machine(code,input)
+    comp.dump()
     return output
 
 

@@ -30,42 +30,58 @@ class Machine:
         self.input=input
         self.code=code
         self.output=''
-        self.mem='0'
+        self.mem=[chr(0)]
         self.dp=0
         self.ip=0
-        self.brackcount=0
+
+    def get_output(self):
+        tmp=str(self.output)
+        return tmp
 
     def decode_n_exec(self,ip):
-        if self.code[ip] == '>':
+        #print 'DnE: decoding',self.code[self.ip]
+        if self.code[self.ip] == '>':
+            #print " DnE: dp++"
             self.dp+=1
             if self.dp>=len(self.input):
-                self.mem+='0'
-        elif self.code[ip] == '<':
+                self.mem.append(chr(0))
+        elif self.code[self.ip] == '<':
+            #print " DnE: dp--"
             self.dp-=1
             if self.dp<0:
                 self.mem='0'+self.input
-        elif self.code[ip] == '+':
-            self.mem[dp]=chr(ord(self.mem[dp])+1) if ord(self.mem[dp])<255 else chr(0)
-        elif self.code[ip] == '-':
-            self.mem[dp]=chr(ord(self.mem[dp])-1) if ord(self.mem[dp])>0 else chr(255)
-        elif self.code[ip] == '.':
-            print self.mem[dp]
-            self.output+=self.mem[dp]
-        elif self.code[ip] == ',':
-            self.mem[dp]=self.input[0]
-            self.input[1:]
-        elif self.code[ip] == '[':
-            self.brackcount+=1
-            if ord(self.mem[dp])==0:
+                self.mem.insert(0,chr(0))
+        elif self.code[self.ip] == '+':
+            #print " DnE: *(dp)++"
+            self.mem[self.dp]=chr(ord(self.mem[self.dp])+1) if ord(self.mem[self.dp])<255 else chr(0)
+        elif self.code[self.ip] == '-':
+            #print ' DnE: *(dp)--'
+            self.mem[self.dp]=chr(ord(self.mem[self.dp])-1) if ord(self.mem[self.dp])>0 else chr(255)
+        elif self.code[self.ip] == '.':
+            #print ' DnE: Put mem@dp to output'
+            self.output+=self.mem[self.dp]
+        elif self.code[self.ip] == ',':
+            #print ' DnE: Read input to mem@dp' 
+            self.mem[self.dp]=self.input[0]
+            self.input=self.input[1:]
+        elif self.code[self.ip] == '[':
+            #print ' DnE: IF'
+            brackcount=1
+            if ord(self.mem[self.dp])==0:
                 # search for ] and set ip after that
-                pass
-            pass
-        elif self.code[ip] == ']':
-            self.brackcount-=1
-            if ord(self.mem[dp])!=0:
-                # go back to [ and set ip after that
-                pass
-            pass
+                while not (self.code[self.ip]==']' and brackcount==0):
+                    self.ip+=1
+                    if self.code[self.ip]=='[': brackcount+=1
+                    if self.code[self.ip]==']' and brackcount>0:
+                        brackcount-=1
+        elif self.code[self.ip] == ']':
+            #print ' DnE: BACK IF'
+            brackcount=1
+            if ord(self.mem[self.dp])!=0:
+                while not (self.code[self.ip]=='[' and brackcount==0):
+                    self.ip-=1
+                    if self.code[self.ip]==']': brackcount+=1
+                    if self.code[self.ip]=='[' and brackcount>0: brackcount-=1
         else:
             return None
         self.ip+=1
@@ -80,23 +96,27 @@ class Machine:
     def dump(self):
         print " --- MACHINE ---"
         print "Memory:",self.mem
+        print "Memory decoded",map(lambda i: ord(i), self.mem)
         print "Code:",self.code
-        print "Input:",self.input
-        print "Output:",self.output
+        print '     ',''.join(map(lambda i: '-' if self.ip!=i else '^',xrange(len(self.code)) ))
+        print "@instruction:",self.code[self.ip]
+        print "Input:",str(self.input)
+        print "Output:",str(self.output)
         print "DP:",self.dp
         print "IP:",self.ip
-        print "@instruction:",self.code[self.ip]
         print " ---------------"
 
 def brain_luck(code, input):
     output=None
     comp=Machine(code,input)
-    comp.dump()
     while comp.got_code():
-        print "We still have code"
-        comp.dump()
-        raw_input()
-    return output
+        #print "We still have code"
+        #comp.dump()
+        comp.decode_n_exec(0)
+        #raw_input()
+    #print ord(comp.get_output())
+    #comp.dump()
+    return comp.get_output()
 
 
 # Echo until byte(255) encountered
@@ -110,3 +130,4 @@ print brain_luck(',[.[-],]', 'Codewars' + chr(0)),"SHOULD ==", 'Codewars'
 # Two numbers multiplier
 print 'INPUT:',',>,<[>[->+>+<<]>>[-<<+>>]<<<-]>>.', chr(8) + chr(9)
 print brain_luck(',>,<[>[->+>+<<]>>[-<<+>>]<<<-]>>.', chr(8) + chr(9)), "SHOULD ==", chr(72)
+

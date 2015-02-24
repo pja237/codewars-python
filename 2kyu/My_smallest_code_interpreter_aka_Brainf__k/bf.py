@@ -27,35 +27,62 @@
 
 class Machine:
     def __init__(self,code='',input=''):
-        self.mem=list(input)
+        self.input=input
+        self.code=code
+        self.output=''
+        self.mem='0'
         self.dp=0
         self.ip=0
-        self.code=code
+        self.brackcount=0
 
-    def decode(self,ip):
+    def decode_n_exec(self,ip):
         if self.code[ip] == '>':
             self.dp+=1
             if self.dp>=len(self.input):
-                self.input+='0'
+                self.mem+='0'
         elif self.code[ip] == '<':
             self.dp-=1
-            if self.dp<0
-                self.input='0'+self.input
+            if self.dp<0:
+                self.mem='0'+self.input
         elif self.code[ip] == '+':
-            self.input[dp]=chr(ord(self.input[dp])+1) if ord(self.input[dp])<255 else chr(0)
+            self.mem[dp]=chr(ord(self.mem[dp])+1) if ord(self.mem[dp])<255 else chr(0)
         elif self.code[ip] == '-':
-            self.input[dp]=chr(ord(self.input[dp])-1) if ord(self.input[dp])>0 else chr(255)
+            self.mem[dp]=chr(ord(self.mem[dp])-1) if ord(self.mem[dp])>0 else chr(255)
         elif self.code[ip] == '.':
-            print self.input[dp]
+            print self.mem[dp]
+            self.output+=self.mem[dp]
         elif self.code[ip] == ',':
-            pass
+            self.mem[dp]=self.input[0]
+            self.input[1:]
         elif self.code[ip] == '[':
+            self.brackcount+=1
+            if ord(self.mem[dp])==0:
+                # search for ] and set ip after that
+                pass
+            pass
         elif self.code[ip] == ']':
+            self.brackcount-=1
+            if ord(self.mem[dp])!=0:
+                # go back to [ and set ip after that
+                pass
+            pass
+        else:
+            return None
+        self.ip+=1
+        return 1
+
+    def got_code(self):
+        if self.ip>=len(self.code):
+            return False
+        else:
+            return True
 
     def dump(self):
         print " --- MACHINE ---"
         print "Memory:",self.mem
         print "Code:",self.code
+        print "Input:",self.input
+        print "Output:",self.output
         print "DP:",self.dp
         print "IP:",self.ip
         print "@instruction:",self.code[self.ip]
@@ -65,6 +92,10 @@ def brain_luck(code, input):
     output=None
     comp=Machine(code,input)
     comp.dump()
+    while comp.got_code():
+        print "We still have code"
+        comp.dump()
+        raw_input()
     return output
 
 
